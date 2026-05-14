@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HeroStage } from "./_components/hero-stage";
 
 export default function HomePage() {
   return (
@@ -16,41 +17,7 @@ export default function HomePage() {
           the room and a magenta wireframe rat orbiting your prompt.
         </p>
 
-        <div style={{
-          display: "inline-flex",
-          flexWrap: "wrap",
-          gap: 12,
-          justifyContent: "center",
-          marginBottom: 60,
-        }}>
-          <Link href="/download/" className="btn btnPrimary">
-            ⟶ Get Catty 3D
-          </Link>
-          <a
-            href="https://github.com/mochiexists/catty-3d"
-            className="btn btnGhost"
-            target="_blank"
-            rel="noreferrer"
-          >
-            View source
-          </a>
-        </div>
-
-        <div className="videoPorthole">
-          <video
-            src="/cat-demo-1080.mp4"
-            poster="/cat-demo-poster.jpg"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            aria-label="Catty 3D demo — terminal panel orbited by a cat and a wireframe rat"
-          />
-        </div>
-        <p className="videoCaption">
-          ↳ Maxwell + the rat orbit · drag to spin in the real app
-        </p>
+        <HeroStage />
       </section>
 
       <section className="section container">

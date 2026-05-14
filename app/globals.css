@@ -651,6 +651,10 @@ main { position: relative; z-index: 1; }
   color: var(--cream-faint);
 }
 
+.heroTermStage {
+  margin-top: 80px;
+}
+
 /* ───────────────────────────────────────────────
    Sections + features
    ─────────────────────────────────────────────── */
