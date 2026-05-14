@@ -90,11 +90,9 @@ code, pre, .mono {
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: linear-gradient(135deg, var(--accent) 0%, #ff7a3d 100%);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
+  display: block;
+  object-fit: cover;
+  image-rendering: -webkit-optimize-contrast;
 }
 
 .nav {

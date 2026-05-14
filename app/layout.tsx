@@ -41,6 +41,14 @@ export const metadata: Metadata = {
     description:
       "Catty is a macOS terminal rendered in 3D space. Local shell or SSH, with a real cat in the room.",
   },
+  icons: {
+    icon: [
+      { url: "/favicon-32.png", type: "image/png", sizes: "32x32" },
+      { url: "/icons/icon-192.png", type: "image/png", sizes: "192x192" },
+    ],
+    shortcut: [{ url: "/favicon-32.png", type: "image/png" }],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   other: { "theme-color": "#06070a" },
 };
 
@@ -49,7 +57,13 @@ function Header() {
     <header className="siteHeader">
       <div className="container">
         <Link href="/" className="brand">
-          <span className="brandMark">🐱</span>
+          <img
+            src="/icons/icon-64.png"
+            alt=""
+            width={32}
+            height={32}
+            className="brandMark"
+          />
           <span>Catty 3D</span>
         </Link>
         <nav className="nav">
