@@ -22,7 +22,7 @@ function CopyBlock({ command }: { command: string }) {
         type="button"
         aria-label="Copy to clipboard"
       >
-        {copied ? "Copied!" : "Copy"}
+        {copied ? "Copied" : "Copy"}
       </button>
     </div>
   );
@@ -57,15 +57,15 @@ export function DownloadExperience({
     <div className="downloadPaths">
       {/* ─── Outdoor Catty / direct path ─── */}
       <article className="downloadPath">
-        <p className="downloadPathEyebrow">Outdoor Catty</p>
-        <h3>Direct download for Mac.</h3>
+        <p className="downloadPathEyebrow">Outdoor · Direct</p>
+        <h3>Notarized for <em>your shell</em>.</h3>
         <p className="downloadPathBody">
-          Unsandboxed build with the full local-terminal feature set.
-          Notarized, signed with our Developer ID, Sparkle auto-updates
-          from inside the app.
+          The unsandboxed Mac build with the full local-terminal feature
+          set. Notarized, signed with our Developer ID, Sparkle handles
+          updates from inside the app. Pick how you want it on disk.
         </p>
 
-        <div className="installToggle" role="tablist">
+        <div className="installToggle" role="tablist" aria-label="Install method">
           {methods.map((m) => (
             <button
               className={`installToggleBtn${method === m.id ? " installToggleBtnActive" : ""}`}
@@ -86,11 +86,11 @@ export function DownloadExperience({
           {method === "dmg" && (
             <>
               <a className="planButton" href={downloadUrl}>
-                Download .dmg
+                ↓ Download .dmg
               </a>
               <ul className="installMeta">
                 <li>Apple Silicon &amp; Intel · macOS 14+</li>
-                <li>Resolves to the latest release on GitHub</li>
+                <li>Resolves to /releases/latest on GitHub</li>
               </ul>
             </>
           )}
@@ -101,12 +101,12 @@ export function DownloadExperience({
 
       {/* ─── Indoor Catty / App Store path ─── */}
       <article className="downloadPath">
-        <p className="downloadPathEyebrow">Indoor Catty</p>
-        <h3>Mac App Store.</h3>
+        <p className="downloadPathEyebrow">Indoor · App Store</p>
+        <h3>Sandboxed, <em>uniform</em>.</h3>
         <p className="downloadPathBody">
-          Sandboxed build for people who like their installers uniform.
-          SSH works fine. Local shell sessions are disabled (sandbox can&rsquo;t
-          fork your shell) — grab Outdoor for that.
+          For people who like their installers from one place. SSH still
+          works. Local-shell sessions are disabled — Apple&rsquo;s sandbox
+          can&rsquo;t fork your zsh. Grab Outdoor for that.
         </p>
         <div className="downloadPathActions">
           {appStoreUrl ? (
@@ -114,7 +114,7 @@ export function DownloadExperience({
               <img
                 src="https://tools.applemediaservices.com/api/badges/download-on-the-mac-app-store/black/en-us?size=250x83"
                 alt="Download on the Mac App Store"
-                style={{ height: 48 }}
+                style={{ height: 52 }}
               />
             </a>
           ) : (
@@ -122,13 +122,15 @@ export function DownloadExperience({
               <img
                 src="https://tools.applemediaservices.com/api/badges/download-on-the-mac-app-store/black/en-us?size=250x83"
                 alt=""
-                style={{ height: 48, opacity: 0.5 }}
+                style={{ height: 52, opacity: 0.5 }}
               />
             </span>
           )}
         </div>
         {!appStoreUrl && (
-          <p className="downloadPathComingSoon">In App Review — link goes live with first approval.</p>
+          <p className="downloadPathComingSoon">
+            In App Review — link goes live with first approval.
+          </p>
         )}
       </article>
     </div>

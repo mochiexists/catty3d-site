@@ -6,13 +6,17 @@ export default function PrivacyPage() {
   return (
     <main className="container">
       <article className="prose">
-        <h1>Privacy</h1>
-        <p>Last updated: {new Date().getFullYear()}</p>
+        <p className="eyebrow">Catalogue · 003</p>
+        <h1 style={{ marginTop: 16 }}><em>Privacy</em></h1>
+        <p style={{ color: "var(--cream-faint)", fontFamily: "var(--font-mono), monospace", fontSize: 13, marginTop: 8 }}>
+          Last updated · {new Date().getFullYear()}
+        </p>
 
         <p>
-          Catty 3D runs entirely on your Mac. It does not phone home, does
-          not analytics-ping, and does not collect telemetry from your
-          terminal sessions. What happens in your shell stays in your shell.
+          Catty 3D runs entirely on your Mac. It does not phone home,
+          does not analytics-ping, and does not collect telemetry from
+          your terminal sessions. What happens in your shell stays in
+          your shell.
         </p>
 
         <h2>What Catty connects to</h2>
@@ -22,9 +26,10 @@ export default function PrivacyPage() {
             connect to. Authentication uses your provided credentials.
           </li>
           <li>
-            <strong>Sparkle update feed</strong> (Outdoor build only) — an
-            HTTPS request to the appcast on catty3d.com when checking for
-            updates. No identifying data is sent beyond what HTTPS requires.
+            <strong>Sparkle update feed</strong> (Outdoor build only) —
+            an HTTPS request to <code>catty3d.com/appcast.xml</code> when
+            checking for updates. No identifying data is sent beyond what
+            HTTPS requires.
           </li>
         </ul>
 
@@ -37,9 +42,10 @@ export default function PrivacyPage() {
 
         <h2>Local data</h2>
         <p>
-          SSH host bookmarks and your chosen working directory are stored in
-          standard macOS app preferences on your machine. SSH passwords (if
-          you save them) live in the macOS Keychain, scoped to the Catty app.
+          SSH host bookmarks and your chosen working directory are stored
+          in standard macOS app preferences on your machine. SSH passwords
+          (if you save them) live in the macOS Keychain, scoped to the
+          Catty app.
         </p>
 
         <h2>Contact</h2>
