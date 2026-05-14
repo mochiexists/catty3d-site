@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { CattyTerminal } from "./_components/terminal";
 
 export default function HomePage() {
   return (
@@ -17,19 +16,25 @@ export default function HomePage() {
           the room and a magenta wireframe rat orbiting your prompt.
         </p>
 
-        <CattyTerminal />
-
-        <p style={{
-          marginTop: 26,
-          color: "var(--cream-faint)",
-          fontFamily: "var(--font-mono), monospace",
-          fontSize: 12,
-          letterSpacing: "0.08em",
+        <div style={{
+          display: "inline-flex",
+          flexWrap: "wrap",
+          gap: 12,
+          justifyContent: "center",
+          marginBottom: 60,
         }}>
-          ↑ try typing <span style={{ color: "var(--magenta)" }}>download</span>,{" "}
-          <span style={{ color: "var(--magenta)" }}>brew</span>, or{" "}
-          <span style={{ color: "var(--magenta)" }}>meow</span>
-        </p>
+          <Link href="/download/" className="btn btnPrimary">
+            ⟶ Get Catty 3D
+          </Link>
+          <a
+            href="https://github.com/mochiexists/catty-3d"
+            className="btn btnGhost"
+            target="_blank"
+            rel="noreferrer"
+          >
+            View source
+          </a>
+        </div>
 
         <div className="videoPorthole">
           <video
@@ -127,7 +132,8 @@ export default function HomePage() {
           <h2 className="sectionTitle"><em>Get</em> Catty 3D.</h2>
           <p className="sectionLede">
             Brew if you&rsquo;ve drunk the Kool-Aid. DMG if you want to
-            double-click. Script if you trust us with a curl pipe.
+            double-click. Script if you trust us with a curl pipe. Or
+            talk to the terminal — your call.
           </p>
         </div>
 

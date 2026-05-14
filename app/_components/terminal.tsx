@@ -2,6 +2,8 @@
 
 import {
   KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  ReactNode,
   useCallback,
   useEffect,
   useRef,
@@ -9,19 +11,23 @@ import {
 } from "react";
 
 /**
- * Catty interactive terminal — a fake shell hosted on the home page.
- * Static export only: no server, no real exec; canned responses
- * keyed off the typed command. Goal is to feel like the real Catty
- * terminal (prompt, echo, blinking caret, history) and surface every
- * download path through conversation rather than buttons.
+ * Catty interactive terminal — a fake shell hosted on the download page.
+ * Static export only: no server, no real exec; canned responses keyed
+ * off typed commands. Goal is to feel like the real Catty terminal
+ * (prompt, echo, blinking caret, history) and surface every download
+ * path through conversation rather than buttons.
  */
 
-type LineKind = "out" | "echo" | "err" | "ok" | "ascii" | "ghost";
+type LineKind = "out" | "echo" | "err" | "ok" | "ascii" | "ghost" | "cmd" | "url";
 
 type Line = {
   id: number;
   kind: LineKind;
   text: string;
+  /** When set, an inline copy chip is rendered after the text. */
+  copy?: string;
+  /** When set, an inline open-in-tab chip is rendered after the text. */
+  href?: string;
 };
 
 const PROMPT = "catty:~ %";
@@ -58,6 +64,7 @@ const HELP = [
   "  clear             clear the screen",
   "  help              this list",
   "",
+  "shortcuts: ↑/↓ history · tab autocomplete · ⌃L clear",
   "tip — try `download` first.",
 ];
 
@@ -78,7 +85,11 @@ const ROOMS = [
 
 type Result = {
   lines: Omit<Line, "id">[];
-  link?: { label: string; href: string };
+  /** Map of digit-keys → command name; lets the user press 1/2/3 next. */
+  numbered?: Record<string, string>;
+  /** Side-effect: open a URL in a new tab. */
+  open?: string;
+  /** Side-effect: copy a string to clipboard with a toast. */
   copy?: string;
   clear?: boolean;
 };
@@ -98,14 +109,13 @@ function runCommand(raw: string): Result {
         lines: [
           { kind: "out", text: "three install paths — pick your shape:" },
           { kind: "out", text: "" },
-          { kind: "ok", text: "  1. brew      → " + HOMEBREW_CMD },
-          { kind: "ok", text: "  2. script    → " + SCRIPT_CMD },
-          { kind: "ok", text: "  3. dmg       → " + DMG_URL },
+          { kind: "ok", text: "  1. brew     →  " + HOMEBREW_CMD, copy: HOMEBREW_CMD },
+          { kind: "ok", text: "  2. script   →  " + SCRIPT_CMD,   copy: SCRIPT_CMD },
+          { kind: "ok", text: "  3. dmg      →  " + DMG_URL,      href: DMG_URL },
           { kind: "out", text: "" },
-          { kind: "out", text: "type any of: brew, script, dmg, appstore" },
-          { kind: "ghost", text: "or visit /download for the full picker" },
+          { kind: "ghost", text: "press 1 / 2 / 3 to jump in, or type the name." },
         ],
-        link: { label: "open /download →", href: "/download/" },
+        numbered: { "1": "brew", "2": "script", "3": "dmg" },
       };
 
     case "brew":
@@ -114,13 +124,11 @@ function runCommand(raw: string): Result {
         lines: [
           { kind: "out", text: "homebrew (recommended):" },
           { kind: "out", text: "" },
-          { kind: "ok", text: "  $ " + HOMEBREW_CMD },
+          { kind: "cmd", text: HOMEBREW_CMD, copy: HOMEBREW_CMD },
           { kind: "out", text: "" },
           { kind: "ghost", text: "first command taps mochiexists/catty3d." },
-          { kind: "ghost", text: "second command installs the cask." },
-          { kind: "ghost", text: "sparkle handles updates after install." },
+          { kind: "ghost", text: "second installs the cask. sparkle handles updates after." },
         ],
-        copy: HOMEBREW_CMD,
       };
 
     case "script":
@@ -129,12 +137,11 @@ function runCommand(raw: string): Result {
         lines: [
           { kind: "out", text: "one-line install script:" },
           { kind: "out", text: "" },
-          { kind: "ok", text: "  $ " + SCRIPT_CMD },
+          { kind: "cmd", text: SCRIPT_CMD, copy: SCRIPT_CMD },
           { kind: "out", text: "" },
           { kind: "ghost", text: "fetches the latest dmg from github releases," },
           { kind: "ghost", text: "verifies, opens for drag-to-applications." },
         ],
-        copy: SCRIPT_CMD,
       };
 
     case "dmg":
@@ -143,17 +150,16 @@ function runCommand(raw: string): Result {
         lines: [
           { kind: "out", text: "direct download:" },
           { kind: "out", text: "" },
-          { kind: "ok", text: "  → " + DMG_URL },
+          { kind: "url", text: DMG_URL, href: DMG_URL, copy: DMG_URL },
           { kind: "out", text: "" },
           { kind: "ghost", text: "notarized, signed with our developer id." },
           { kind: "ghost", text: "first release ships shortly — link 404s until then." },
         ],
-        link: { label: "open dmg link →", href: DMG_URL },
+        open: DMG_URL,
       };
 
     case "appstore":
     case "app-store":
-    case "mac app store":
       return {
         lines: [
           { kind: "out", text: "mac app store (indoor build):" },
@@ -173,10 +179,10 @@ function runCommand(raw: string): Result {
     case "src":
       return {
         lines: [
-          { kind: "out", text: "source: " + REPO_URL },
+          { kind: "url", text: REPO_URL, href: REPO_URL, copy: REPO_URL },
           { kind: "ghost", text: "MIT licensed. PRs welcome." },
         ],
-        link: { label: "open github →", href: REPO_URL },
+        open: REPO_URL,
       };
 
     case "ls":
@@ -265,11 +271,16 @@ export function CattyTerminal() {
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<string[]>([]);
   const [histIndex, setHistIndex] = useState<number | null>(null);
+  const [pendingNumbered, setPendingNumbered] = useState<Record<string, string> | null>(null);
   const [copyTip, setCopyTip] = useState<string | null>(null);
   const idRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const initOnceRef = useRef(false);
+  /** Tracks whether the user is at the bottom of the scroll buffer.
+      We only auto-scroll if they were — that way mid-buffer reading
+      / selection isn't yanked back to the prompt. */
+  const stickToBottomRef = useRef(true);
 
   const appendLines = useCallback((newLines: Omit<Line, "id">[]) => {
     setLines((prev) => {
@@ -282,6 +293,22 @@ export function CattyTerminal() {
     });
   }, []);
 
+  const flashCopy = useCallback((label: string) => {
+    setCopyTip(label);
+    setTimeout(() => setCopyTip(null), 1800);
+  }, []);
+
+  const copyToClipboard = useCallback(
+    (text: string, label = "copied to clipboard") => {
+      if (typeof navigator === "undefined" || !navigator.clipboard) return;
+      navigator.clipboard.writeText(text).then(
+        () => flashCopy(label),
+        () => {/* noop */}
+      );
+    },
+    [flashCopy]
+  );
+
   // Boot banner — once.
   useEffect(() => {
     if (initOnceRef.current) return;
@@ -291,78 +318,72 @@ export function CattyTerminal() {
     );
     appendLines([
       ...banner,
-      { kind: "ghost", text: "welcome. this terminal is real(ish) — type `help`." },
+      { kind: "ghost", text: "welcome. this terminal is real(ish) — type `help` or `download`." },
       { kind: "out",   text: "" },
     ]);
   }, [appendLines]);
 
-  // Auto-scroll to bottom on new lines.
+  // Auto-scroll only when the user is already at the bottom.
+  // Reading mid-history won't get yanked back to the prompt.
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    el.scrollTop = el.scrollHeight;
+    if (stickToBottomRef.current) {
+      el.scrollTop = el.scrollHeight;
+    }
   }, [lines]);
 
-  // Auto-focus when the terminal scrolls into view.
+  // Listen for the user scrolling — flip stick-to-bottom accordingly.
   useEffect(() => {
-    const el = inputRef.current;
+    const el = scrollRef.current;
     if (!el) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting && document.activeElement?.tagName !== "INPUT") {
-            el.focus({ preventScroll: true });
-          }
-        }
-      },
-      { threshold: 0.4 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
+    const onScroll = () => {
+      const distance = el.scrollHeight - el.scrollTop - el.clientHeight;
+      stickToBottomRef.current = distance < 6;
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
   }, []);
 
   const submit = useCallback(
     (raw: string) => {
+      const trimmed = raw.trim();
+      // Numbered shortcut — if the previous response offered numbered
+      // options and the user just pressed a digit, route to that.
+      let resolved = trimmed;
+      if (pendingNumbered && pendingNumbered[trimmed]) {
+        resolved = pendingNumbered[trimmed];
+      }
       const echo: Omit<Line, "id"> = { kind: "echo", text: `${PROMPT} ${raw}` };
-      const result = runCommand(raw);
+      const result = runCommand(resolved);
+
       if (result.clear) {
         setLines([]);
         setInput("");
+        setPendingNumbered(null);
         return;
       }
+
+      // Always restore stick-to-bottom on a fresh submit so the user
+      // sees their command and the response.
+      stickToBottomRef.current = true;
       appendLines([echo, ...result.lines, { kind: "out", text: "" }]);
-      if (raw.trim()) {
-        setHistory((h) => [...h, raw]);
-      }
+
+      if (raw.trim()) setHistory((h) => [...h, raw]);
       setHistIndex(null);
       setInput("");
+      setPendingNumbered(result.numbered ?? null);
 
-      // Side-effects: clipboard copy + outbound link
-      if (result.copy && typeof navigator !== "undefined" && navigator.clipboard) {
-        navigator.clipboard.writeText(result.copy).then(
-          () => {
-            setCopyTip("copied to clipboard");
-            setTimeout(() => setCopyTip(null), 1800);
-          },
-          () => {/* noop */}
-        );
-      }
-      if (result.link) {
-        // Tiny delay so the user sees the response render before the
-        // tab opens — softer than a synchronous jump.
+      // Side effects.
+      if (result.copy) copyToClipboard(result.copy);
+      if (result.open && typeof window !== "undefined") {
+        // Tiny delay so the response paints before the new tab opens.
         setTimeout(() => {
-          if (typeof window !== "undefined") {
-            const isExternal = result.link!.href.startsWith("http");
-            if (isExternal) {
-              window.open(result.link!.href, "_blank", "noopener,noreferrer");
-            }
-            // Internal links left for the user to click via the
-            // affordance that gets rendered below.
-          }
+          window.open(result.open!, "_blank", "noopener,noreferrer");
         }, 350);
       }
     },
-    [appendLines]
+    [appendLines, copyToClipboard, pendingNumbered]
   );
 
   const onKey = (e: ReactKeyboardEvent<HTMLInputElement>) => {
@@ -403,13 +424,33 @@ export function CattyTerminal() {
     if (e.key === "l" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       setLines([]);
+      setPendingNumbered(null);
+      return;
+    }
+    // Number-key fast path: if there are pending numbered options and
+    // the input is empty, a digit press jumps straight to that command.
+    if (pendingNumbered && input === "" && /^[1-9]$/.test(e.key) && pendingNumbered[e.key]) {
+      e.preventDefault();
+      submit(e.key);
     }
   };
 
-  const focusInput = () => inputRef.current?.focus();
+  /** Mouse-up handler that focuses the input — but only if the user
+      isn't currently making a text selection. Lets the user drag-select
+      text in scrollback to copy URLs. */
+  const onTermMouseUp = (e: ReactMouseEvent<HTMLDivElement>) => {
+    if (typeof window === "undefined") return;
+    const sel = window.getSelection();
+    if (sel && sel.toString().length > 0) return;
+    // Don't steal focus from the suggestion buttons or copy chips
+    // beneath the scroll area.
+    const target = e.target as HTMLElement;
+    if (target.closest("button, a")) return;
+    inputRef.current?.focus({ preventScroll: true });
+  };
 
   return (
-    <div className="cattyTerm" onClick={focusInput}>
+    <div className="cattyTerm">
       <div className="termChrome">
         <span className="termDot termDot--r" aria-hidden="true" />
         <span className="termDot termDot--y" aria-hidden="true" />
@@ -418,11 +459,9 @@ export function CattyTerminal() {
         <span className="termTag">tty/web</span>
       </div>
 
-      <div ref={scrollRef} className="termScroll">
+      <div ref={scrollRef} className="termScroll" onMouseUp={onTermMouseUp}>
         {lines.map((line) => (
-          <pre key={line.id} className={`termLine termLine--${line.kind}`}>
-            {line.text || " "}
-          </pre>
+          <TerminalLine key={line.id} line={line} onCopy={copyToClipboard} />
         ))}
 
         <form
@@ -444,8 +483,6 @@ export function CattyTerminal() {
             autoCapitalize="off"
             spellCheck={false}
             aria-label="terminal input"
-            // Size input to content so the block caret sits flush
-            // to the end of typed text, like a real terminal.
             style={{ width: `${Math.max(1, input.length)}ch` }}
           />
           <span className="termCaret" aria-hidden="true" />
@@ -471,5 +508,68 @@ export function CattyTerminal() {
         {copyTip && <span className="termCopyTip">{copyTip}</span>}
       </div>
     </div>
+  );
+}
+
+/* ─── Single line renderer (with optional inline copy/open chips) ─── */
+
+function TerminalLine({
+  line,
+  onCopy,
+}: {
+  line: Line;
+  onCopy: (text: string, label?: string) => void;
+}): ReactNode {
+  // The "cmd" kind renders differently — a boxed command line meant
+  // for the user to copy, with an inline copy button nailed to its
+  // right edge.
+  if (line.kind === "cmd") {
+    return (
+      <div className="termCmdRow">
+        <pre className="termLine termLine--cmd">
+          <span className="termCmdPrompt">$</span> {line.text}
+        </pre>
+        <button
+          type="button"
+          className="termInlineCopy"
+          onClick={() => onCopy(line.copy ?? line.text)}
+          aria-label="Copy command"
+        >
+          copy
+        </button>
+      </div>
+    );
+  }
+
+  // Other kinds get inline copy / open-tab chips when present.
+  const hasChip = line.copy || line.href;
+  return (
+    <pre className={`termLine termLine--${line.kind}`}>
+      {line.text || " "}
+      {hasChip && (
+        <span className="termChips">
+          {line.copy && (
+            <button
+              type="button"
+              className="termInlineChip termInlineChip--copy"
+              onClick={() => onCopy(line.copy!)}
+              aria-label="Copy"
+            >
+              copy
+            </button>
+          )}
+          {line.href && (
+            <a
+              href={line.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="termInlineChip termInlineChip--open"
+            >
+              open ↗
+            </a>
+          )}
+        </span>
+      )}
+    </pre>
   );
 }

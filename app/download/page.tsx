@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { DownloadExperience } from "./download-experience";
+import { DownloadTabs } from "./download-tabs";
 
 export const metadata: Metadata = {
   title: "Download",
   description:
-    "Download Catty 3D for macOS. Script, Homebrew, or direct .dmg — and the Mac App Store when it lands.",
+    "Download Catty 3D for macOS. Script, Homebrew, or direct .dmg — or talk to the terminal.",
 };
 
 // GitHub auto-redirects /releases/latest/download/<asset> to the latest
@@ -18,7 +18,13 @@ const APP_STORE_URL: string | null = null; // pre-approval
 export default function DownloadPage() {
   return (
     <main className="container" style={{ paddingTop: 80, paddingBottom: 80 }}>
-      <header style={{ textAlign: "center", marginBottom: 64, maxWidth: 640, marginLeft: "auto", marginRight: "auto" }}>
+      <header style={{
+        textAlign: "center",
+        marginBottom: 56,
+        maxWidth: 640,
+        marginLeft: "auto",
+        marginRight: "auto",
+      }}>
         <p className="eyebrow">Catalogue · 002</p>
         <h1 style={{
           fontSize: "clamp(48px, 7vw, 80px)",
@@ -34,12 +40,12 @@ export default function DownloadPage() {
           fontSize: 17,
           lineHeight: 1.6,
         }}>
-          The base app is free on both paths. Outdoor Catty is the full
-          Mac direct-download route; Indoor Catty is the App Store one.
+          Pick the picker, or talk to the terminal. Both land you at the
+          same install.
         </p>
       </header>
 
-      <DownloadExperience
+      <DownloadTabs
         downloadUrl={DMG_URL}
         homebrewCmd={HOMEBREW_CMD}
         scriptCmd={SCRIPT_CMD}
@@ -47,7 +53,7 @@ export default function DownloadPage() {
         releaseStatus="// First public release ships shortly. Install commands above will work the moment it lands."
       />
 
-      <section style={{ marginTop: 80, textAlign: "center" }}>
+      <section style={{ marginTop: 64, textAlign: "center" }}>
         <p style={{
           color: "var(--cream-faint)",
           fontSize: 13,
