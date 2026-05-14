@@ -10,7 +10,11 @@ export const metadata: Metadata = {
 
 // GitHub auto-redirects /releases/latest/download/<asset> to the latest
 // release's matching asset; 404s before the first release ships.
-const DMG_URL = "https://github.com/mochiexists/catty-3d/releases/latest/download/Catty.dmg";
+// DMG ships from the SITE repo (release-host pattern, mirrors LAIC).
+// catty-3d is the source; catty3d-site is where releases land so the
+// versioned + fixed-name DMG sit alongside the appcast.xml under
+// /releases/latest/download/.
+const DMG_URL = "https://github.com/mochiexists/catty3d-site/releases/latest/download/Catty.dmg";
 const HOMEBREW_CMD = "brew tap mochiexists/catty3d && brew install catty";
 const SCRIPT_CMD = "curl -fsSL https://catty3d.com/install.sh | sh";
 const APP_STORE_URL: string | null = null; // pre-approval

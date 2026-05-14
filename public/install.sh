@@ -9,7 +9,10 @@
 
 set -eu
 
-REPO="mochiexists/catty-3d"
+# Release host (mirrors localaicat's pattern: site repo hosts the DMG +
+# appcast, source repo holds the code). The site repo is also a public
+# Pages deploy, so rate-limited GitHub API calls aren't the bottleneck.
+REPO="mochiexists/catty3d-site"
 SITE="https://catty3d.com"
 TMP_DIR=$(mktemp -d)
 DMG_PATH="$TMP_DIR/Catty.dmg"

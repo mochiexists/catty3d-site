@@ -33,7 +33,8 @@ type Line = {
 const PROMPT = "catty:~ %";
 const HOMEBREW_CMD = "brew tap mochiexists/catty3d && brew install catty";
 const SCRIPT_CMD = "curl -fsSL https://catty3d.com/install.sh | sh";
-const DMG_URL = "https://github.com/mochiexists/catty-3d/releases/latest/download/Catty.dmg";
+// DMG lives on the site repo (release-host pattern, mirrors LAIC).
+const DMG_URL = "https://github.com/mochiexists/catty3d-site/releases/latest/download/Catty.dmg";
 const REPO_URL = "https://github.com/mochiexists/catty-3d";
 
 const BANNER = `
