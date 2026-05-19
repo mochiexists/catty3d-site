@@ -154,7 +154,6 @@ function runCommand(raw: string): Result {
           { kind: "url", text: DMG_URL, href: DMG_URL, copy: DMG_URL },
           { kind: "out", text: "" },
           { kind: "ghost", text: "notarized, signed with our developer id." },
-          { kind: "ghost", text: "first release ships shortly — link 404s until then." },
         ],
         open: DMG_URL,
       };

@@ -11,7 +11,6 @@ type DownloadTabsProps = {
   homebrewCmd: string;
   scriptCmd: string;
   appStoreUrl: string | null;
-  releaseStatus: string;
 };
 
 export function DownloadTabs(props: DownloadTabsProps) {
@@ -51,7 +50,6 @@ export function DownloadTabs(props: DownloadTabsProps) {
             homebrewCmd={props.homebrewCmd}
             scriptCmd={props.scriptCmd}
             appStoreUrl={props.appStoreUrl}
-            releaseStatus={props.releaseStatus}
           />
         ) : (
           <div className="dlTermWrap">

@@ -35,7 +35,6 @@ type DownloadExperienceProps = {
   homebrewCmd: string;
   scriptCmd: string;
   appStoreUrl: string | null;
-  releaseStatus: string;
 };
 
 export function DownloadExperience({
@@ -43,7 +42,6 @@ export function DownloadExperience({
   homebrewCmd,
   scriptCmd,
   appStoreUrl,
-  releaseStatus,
 }: DownloadExperienceProps) {
   const [method, setMethod] = useState<InstallMethod>("brew");
 
@@ -95,8 +93,6 @@ export function DownloadExperience({
             </>
           )}
         </div>
-
-        <p className="downloadPathComingSoon">{releaseStatus}</p>
       </article>
 
       {/* ─── Indoor Catty / App Store path ─── */}

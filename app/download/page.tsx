@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 // GitHub auto-redirects /releases/latest/download/<asset> to the latest
-// release's matching asset; 404s before the first release ships.
+// release's matching asset.
 // DMG ships from the SITE repo (release-host pattern, mirrors LAIC).
 // catty-3d is the source; catty3d-site is where releases land so the
 // versioned + fixed-name DMG sit alongside the appcast.xml under
@@ -54,7 +54,6 @@ export default function DownloadPage() {
         homebrewCmd={HOMEBREW_CMD}
         scriptCmd={SCRIPT_CMD}
         appStoreUrl={APP_STORE_URL}
-        releaseStatus="// First public release ships shortly. Install commands above will work the moment it lands."
       />
 
       <section style={{ marginTop: 64, textAlign: "center" }}>
