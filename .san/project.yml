@@ -12,6 +12,8 @@ integrations:
   copy: []
   analytics:
     provider: goatcounter
+    domain: catty3d.com
+    searchConsoleProperty: sc-domain:catty3d.com
     siteId: catty3d
     publicDashboard: https://catty3d.goatcounter.com
     searchConsole: pending
