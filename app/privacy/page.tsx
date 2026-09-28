@@ -39,13 +39,20 @@ export default function PrivacyPage() {
           <li>No transmission of terminal contents, commands, or files.</li>
           <li>No user accounts. Nothing to register for.</li>
         </ul>
-
         <h2>Local data</h2>
         <p>
           SSH host bookmarks and your chosen working directory are stored
           in standard macOS app preferences on your machine. SSH passwords
           (if you save them) live in the macOS Keychain, scoped to the
           Catty app.
+        </p>
+
+        <h2>This website</h2>
+        <p>
+          This website counts page views with GoatCounter. It sets no cookies,
+          does not store IP addresses, and builds no visitor profiles. This
+          applies to the website only, not the app. The totals are public at{" "}
+          <a href="https://catty3d.goatcounter.com">catty3d.goatcounter.com</a>.
         </p>
 
         <h2>Contact</h2>

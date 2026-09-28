@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope, IBM_Plex_Mono } from "next/font/google";
 import Link from "next/link";
 import { Starfield } from "./_components/starfield";
+import { GoatCounter } from "./_components/goat-counter";
 import "./globals.css";
 
 const displayFont = Cormorant_Garamond({
@@ -30,6 +31,7 @@ const SITE_URL = "https://catty3d.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  alternates: { canonical: "./" },
   title: {
     default: "Catty 3D — A terminal that lives in 3D space",
     template: "%s · Catty 3D",
@@ -43,11 +45,13 @@ export const metadata: Metadata = {
     url: SITE_URL,
     siteName: "Catty 3D",
     type: "website",
+    images: [{ url: "/cat-demo-poster.jpg", width: 1920, height: 1080, alt: "Catty 3D terminal floating in 3D space" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Catty 3D",
     description: "A macOS terminal that lives in 3D space.",
+    images: ["/cat-demo-poster.jpg"],
   },
   icons: {
     icon: [
@@ -131,6 +135,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <CoordinateStrip />
         {children}
         <Footer />
+      <GoatCounter />
       </body>
     </html>
   );
