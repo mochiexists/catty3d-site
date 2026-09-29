@@ -1,0 +1,19 @@
+schemaVersion: 1
+id: catty3d-site
+name: Catty3D site
+kind: webApplication
+summary: "next.js static-export marketing site for catty3d.com, deployed to github pages."
+capabilities: []
+platforms: []
+repository:
+  canonicalRemotes:
+    - https://github.com/mochiexists/catty3d-site.git
+integrations:
+  copy: []
+  analytics:
+    provider: goatcounter
+    domain: catty3d.com
+    searchConsoleProperty: sc-domain:catty3d.com
+    siteId: catty3d
+    publicDashboard: https://catty3d.goatcounter.com
+    searchConsole: pending
